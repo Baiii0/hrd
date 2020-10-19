@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>图片华容道</title>
+</head>
+<body>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>华容道</title>
+	<!--(bootstrap搭建)-->
+	<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+	<meta http-equiv="Access-Control-Allow-Origin" content="*">
+	<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+	<link rel="stylesheet" type="text/css" href="css/style.css" charset="UTF-8">  
+</head>
+<body>
+		<font class="chinese">图片华容道</font><br/>
+
+		<button id="rank" type="button" class="btn btn-info" data-toggle="modal" data-target="#myModal" onclick="rank()">
+		  排行榜
+		</button>
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+		        <h4 class="modal-title" id="myModalLabel">排行榜</h4>
+		        <div>
+		      		<button type="button" class="btn btn-default" onclick="stepRank()">步数榜</button>
+		      		<button type="button" class="btn btn-default" onclick="timeRank()">时间榜</button>
+		      		(自己做才会有记录哦)
+		      	</div>
+		      </div>
+		      <font size="4px">
+		      <div id="content" class="modal-body">
+		      </div>
+		  		</font>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+		</div>
+		</div>
+		&nbsp;&nbsp;
+		<button id="start" class="btn btn-primary">开始游戏</button>&nbsp;&nbsp;
+		<button id="help" class="btn btn-success" onclick="help()">提示</button>&nbsp;&nbsp;
+
+		<button id="yt" class="btn btn-danger" type="button" onclick="cancel()">取消原图</button>
+		<br/><br/>
+
+		<div class="xttblog">
+			<ul class="box">
+				<li><img src="" id="0" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="1" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="2" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="3" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="4" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="5" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="6" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="7" value="" onClick="turn(this);"/></li>
+				<li><img src="" id="8" value="" onClick="turn(this);"/></li>
+			</ul>
+		</div>
+		<span class="ch">步数:</span><span id="cnt" class="ch2">0</span><br/><br/>
+		<span class="ch">时间:</span><span id="sec" class="ch2">0</span><br/>
+		<img id="duizhao" src=""></img>
+		<span id="succ" class="" role=""></span>
+	</body>
+
+<script type="text/javascript" src="js/my.js"></script>
+	<!--<script type="text/javascript">
+	
+	
+		var jsonData;
+		var pos;
+		var rank1;
+		var rank2;
+		var flag; //计时器开始标志
+		var isHelp;
+
+		$("#start").click(function() {
+			if (document.getElementById("start").innerHTML == "重新开始") {
+				clearTimeout(timer);
+			}
+			flag = 1;
+			document.getElementById("sec").innerHTML = 0;
+			$("img").attr("onClick", "turn(this);");
+			document.getElementById("start").innerHTML = "重新开始";
+			$.ajax({
+				url: "http://127.0.0.1:5000/getData",
+				data: {},
+				dataType: "json",
+				async: false,
+				success: function(data) {
+					arr = data["pos"];
+					pos = data["white"];
+					t = arr.indexOf(pos);
+					// 展示图片
+					for (i = 0; i < 9; i++) {
+						$("#" + i).attr("value", arr[i]);
+						if(i==t) $("#" + t).attr("src", "data:image/jpg;base64," + data["wImg"]);
+						else $("#" + i).attr("src", "data:image/jpg;base64," + data[arr[i]]);
+					}
+					pos = t;
+					jsonData = data;
+					$("#target").text("查看原图");
+					$("#succ").attr("class", "");
+					$("#succ").attr("role", "");
+					$("#succ").text("");
+					$("#duizhao").attr("src","data:image/jpg;base64," + jsonData["newImg"]);
+
+					document.getElementById("cnt").innerHTML = 0;
+					isHelp = false;
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert("error");
+				}
+			});
+
+			if (flag == 1) {
+				flag = 0;
+				var count = 0;
+				timer = setInterval(function() {
+					count++;
+					document.getElementById("sec").innerHTML = showNum(count);
+				}, 1000)
+			}
+
+		});
+
+		function turn(btn) {
+			white_btn = document.getElementById(pos);
+			btn_id = btn.id;
+			if (pos == btn_id) return;
+			if ((btn_id == pos - 3) || (btn_id == parseInt(pos) + parseInt(3)) || (btn_id == pos - 1 && pos != 3 && pos != 6) ||
+				(btn_id == parseInt(pos) + parseInt(1) && pos != 2 && pos != 5)) {
+
+				src = white_btn.src;
+				white_btn.src = btn.src;
+				btn.src = src;
+
+				var tmp = $("#" + pos).attr("value");
+				$("#" + pos).attr("value", $("#" + btn_id).attr("value"));
+				$("#" + btn_id).attr("value", tmp);
+
+				pos = btn_id;
+				k = document.getElementById("cnt").innerHTML;
+				document.getElementById("cnt").innerHTML = parseInt(k) + 1;
+
+				// 判断成功
+				var flag = 1;
+				for (i = 0; i < 9; i++) {
+					if ($("#" + i).attr("value") != i) {
+						flag = 0;
+						break;
+					}
+				}
+				if (flag) {
+					$("#succ").attr("class", "alert alert-success");
+					$("#succ").attr("role", "alert");
+					$("#succ").text("成功解出!");
+					//time stop
+					clearTimeout(timer);
+					//can't move
+					$("img").attr("onClick", "");
+					document.getElementById("start").innerHTML = "再来一局";
+					// 有帮助 不记录
+					if(!isHelp) record();
+				}
+			}
+		}
+
+	function help() {
+		// 如果已经还原了
+		var arr = new Array(9);
+		flag = 1;
+		for (i = 0; i < 9; i++){
+			arr[i] = $("#" + i).attr("value");
+			if(arr[i]!=i) flag=0;
+		}
+		if(flag) document.getElementById("succ").innerHTML = '您已经成功啦';
+		else {
+		isHelp = true;
+		var jsonString = JSON.stringify(arr);
+		$.ajax({
+			type: "POST",
+			url: "http://127.0.0.1:5000/h2",
+			data: {
+				"pos": jsonString,
+				"white": arr[pos]
+			},
+			dataType: "json",
+			contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+			async: false,
+			success: function(data) {
+				arr = data;
+				var j = 0;
+				function fn(){ turn(document.getElementById(arr[j])); j++; }
+				for(var i = 0; i < arr.length; i++ ){
+			    	setTimeout(fn,i*700)//倍速?
+			    }
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+				alert("请先开始游戏");
+			}
+		});
+		}
+	}
+
+	function rank(){
+		//当前时间 步数 时间
+		$.ajax({
+				url: "http://127.0.0.1:5000/getRank",
+				data: {},
+				dataType: "json",
+				async: false,
+				success: function(data) {
+					//空
+					rank1=data["step"]
+					rank2=data["time"]
+					document.getElementById("content").innerHTML=rank1;
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert("error");
+				}
+			});
+	}
+
+	function record(){
+		var date = new Date();
+		//id cnt sec
+		var step=document.getElementById("cnt").innerHTML;
+		var time=document.getElementById("sec").innerHTML;
+		$.ajax({
+			type: "POST",
+			url: "http://127.0.0.1:5000/addRank",
+			data: {
+				"date": date,
+				"step": step,
+				"time": time
+			},
+			dataType: "json",
+			contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+			async: false,
+			success: function(data) {
+			},
+			error: function(XMLHttpRequest, textStatus, errorThrown) {
+
+			}
+		});
+	}
+
+	function stepRank(){
+		document.getElementById("content").innerHTML=rank1;
+	}
+
+	function timeRank(){
+		document.getElementById("content").innerHTML=rank2;
+	}
+
+	//封装一个处理单位数字的函数
+	function showNum(num) {
+		if (num < 10) {
+	   		return '0' + num
+	   	}
+	   	return num
+	}
+
+
+	function cancel(){
+		if(document.getElementById("yt").innerHTML=="取消原图"){
+			document.getElementById("yt").innerHTML="显示原图"
+			document.getElementById('duizhao').style.display="none";
+		}else{
+			document.getElementById("yt").innerHTML="取消原图"
+			document.getElementById('duizhao').style.display="";
+		}
+	}
+</script>-->
+</html>
